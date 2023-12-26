@@ -1,12 +1,14 @@
 import '../styles/Word.css'
 
+export const MAX_NUMBER_OF_TRIES = 6
+
 export default function Word({ number }) {
     function handleKeyPress(e) {
-        if (e.code == "Backspace") {
+        if (e.code === "Backspace") {
             const { value, name } = e.target
             const charNumStr = name.split("-")[3]
             
-            if (value.length == 0) {
+            if (value.length === 0) {
                 const charNum = parseInt(charNumStr, 10)
                 if (charNum > 1) {
                     const previousSibling = document.querySelector(

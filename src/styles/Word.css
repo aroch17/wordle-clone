@@ -3,10 +3,6 @@
     margin-top: 7.5px;
 }
 
-/* .char-input-row:first-child {
-    margin-top: 10px;
-} */
-
 .char-input {
     width: 40px;
     height: 40px;
@@ -17,4 +13,5 @@
     /* Removes blinking cursor */
     color: transparent;
     text-shadow: 0 0 0 #fff;
+    border: none;
 }
