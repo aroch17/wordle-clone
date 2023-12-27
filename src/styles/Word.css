@@ -16,3 +16,11 @@
     border: 1px solid #73777B;
     text-transform: uppercase;
 }
+
+.green {
+    background-color: green;
+}
+
+.yellow {
+    background-color: yellow;
+}
