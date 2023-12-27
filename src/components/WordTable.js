@@ -4,7 +4,7 @@ import WordBlock from "./WordBlock"
 
 export default function WordTable() {
     const [currentRow, setCurrentRow] = useState(1)
-    const CORRECT_WORD = "evoke"
+    const CORRECT_WORD = "MATCH"
 
     function checkRowComplete(rowNum) {
         const row = document.querySelector(`.row-${rowNum}`).childNodes[0]
@@ -41,13 +41,40 @@ export default function WordTable() {
         char.classList.add("green")
     }
 
+    function addYellowBackground(rowNum, charNum) {
+        const char = document.querySelector(
+            `input[name=row-${rowNum}-char-${charNum}]`
+        );
+        char.classList.add("yellow")
+    }
+
+    function checkCharMembership(letter, word) {
+        for (let ch of word) {
+            if (ch == letter) { return true }
+        }
+        return false
+    }
+
     function checkWord(rowNum, guessed_word) {
-        if (guessed_word === CORRECT_WORD.toUpperCase()) { 
+        if (guessed_word === CORRECT_WORD) { 
             for (let i = 1; i <= MAX_NUMBER_OF_CHARS; i++) {
                 addGreenBackground(rowNum, i)
             }
+            // disable all rows
+            setCurrentRow(MAX_NUMBER_OF_TRIES + 1)
         }
-        console.log(CORRECT_WORD.split(""))
+        else {
+            for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
+                if (guessed_word[i] == CORRECT_WORD[i]) {
+                    addGreenBackground(rowNum, i+1)
+
+                }
+                else if (checkCharMembership(guessed_word[i], CORRECT_WORD)) {
+                    addYellowBackground(rowNum, i+1)
+                }
+                else { continue }
+            }
+        }
     }
 
 
@@ -69,7 +96,7 @@ export default function WordTable() {
             else if (!checkRowAlpha(rowNum)) { console.log("Invalid characters") }
             else {
                 const guessed_word = makeWord(rowNum)
-                checkWord(1, guessed_word)
+                checkWord(rowNum, guessed_word)
                 moveNextRow()
             }
             // TODO: after last try, focus on leader board button
