@@ -14,6 +14,15 @@ export default function WordTable() {
         return true
     }
 
+    function checkRowAlpha(rowNum) {
+        const row = document.querySelector(`.row-${rowNum}`).childNodes[0]
+        for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
+            const ch = row.childNodes[i].value
+            if (!ch.match(/[a-z]/i)) return false
+        }
+        return true
+    }
+
     function moveNextRow() {
         setCurrentRow(currentRow + 1)
         if (currentRow < MAX_NUMBER_OF_TRIES) {
@@ -26,12 +35,10 @@ export default function WordTable() {
         if (e.code === "Enter") {
             const { name } = e.target
             const rowNum = name.split("-")[1]
-            if (checkRowComplete(rowNum)) {
-                moveNextRow()
-            }
-            else {
-                console.log("Not enough letters")
-            }
+            
+            if (!checkRowComplete(rowNum)) console.log("Not enough letters")
+            else if (!checkRowAlpha(rowNum)) console.log("Invalid characters")
+            else moveNextRow()
             // TODO: after last try, focus on leader board button
         }
     }
