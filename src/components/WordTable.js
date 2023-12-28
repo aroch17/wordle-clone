@@ -4,7 +4,7 @@ import WordBlock from "./WordBlock"
 
 export default function WordTable() {
     const [currentRow, setCurrentRow] = useState(1)
-    const CORRECT_WORD = "MATCH"
+    const CORRECT_WORD = "OUIJA"
 
     function checkRowComplete(rowNum) {
         const row = document.querySelector(`.row-${rowNum}`).childNodes[0]
@@ -50,29 +50,40 @@ export default function WordTable() {
 
     function checkCharMembership(letter, word) {
         for (let ch of word) {
-            if (ch == letter) { return true }
+            if (ch === letter) { return true }
         }
         return false
     }
 
     function checkWord(rowNum, guessed_word) {
-        if (guessed_word === CORRECT_WORD) { 
+        if (guessed_word === CORRECT_WORD) {
             for (let i = 1; i <= MAX_NUMBER_OF_CHARS; i++) {
                 addGreenBackground(rowNum, i)
             }
             // disable all rows
             setCurrentRow(MAX_NUMBER_OF_TRIES + 1)
+            console.log(currentRow)
         }
         else {
-            for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
-                if (guessed_word[i] == CORRECT_WORD[i]) {
-                    addGreenBackground(rowNum, i+1)
+            // split correct word in list -> pop elements from both lists if they are in correct place -> then check for remaining elements and color yellow
+            const correct_letters = CORRECT_WORD.split("")
+            const guessed_word_letters = guessed_word.split("")
 
+            for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
+                console.log(guessed_word_letters[i], correct_letters[i])
+                if (guessed_word_letters[i] === correct_letters[i]) {
+                    addGreenBackground(rowNum, i + 1)
+                    correct_letters[i] = ""
+                    guessed_word_letters[i] = ""
                 }
-                else if (checkCharMembership(guessed_word[i], CORRECT_WORD)) {
-                    addYellowBackground(rowNum, i+1)
+            }
+
+            for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
+                if (guessed_word_letters[i]) {
+                    if (checkCharMembership(guessed_word_letters[i], correct_letters)) {
+                        addYellowBackground(rowNum, i + 1)
+                    }
                 }
-                else { continue }
             }
         }
     }
