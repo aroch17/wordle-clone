@@ -1,11 +1,11 @@
-import WordTable from './components/WordTable'
+import WordTableNew from './components/WordTableNew';
 import './App.css';
 
 function App() {
   return (
     <div className='app-body'>
       <h1 className='title'>Wordle</h1>
-      <WordTable />
+      <WordTableNew />
     </div>
   );
 }
