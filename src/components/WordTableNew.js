@@ -1,12 +1,13 @@
 import { useState, useRef } from "react";
 import WordNew from "./WordNew";
+import { isWordInDict } from "../scripts/dictionaryChecker";
 
 export const MAX_NUMBER_OF_TRIES = 6
 export const MAX_NUMBER_OF_CHARS = 5
 
-const CORRECT_WORD = "MATCH"
-const CORRECT_LETTER_POSITION_CLASS = "green" 
-const CORRECT_LETTER_CLASS = "yellow" 
+const CORRECT_WORD = "TACIT"
+const CORRECT_LETTER_POSITION_CLASS = "green"
+const CORRECT_LETTER_CLASS = "yellow"
 
 export default function WordTableNew() {
     const [currentRow, setCurrentRow] = useState(0)
@@ -19,7 +20,14 @@ export default function WordTableNew() {
     // to focus on next row
     const inputRef = useRef(null)
 
-    function handleKeyDown(e) {
+    function checkCharMembership(letter, word) {
+        for (let ch of word) {
+            if (ch === letter) { return true }
+        }
+        return false
+    }
+
+    async function handleKeyDown(e) {
         const key = e.key
 
         if (key === "Backspace") {
@@ -61,11 +69,59 @@ export default function WordTableNew() {
                 }, 1)
             }
             else {
-                setCurrentRow(currentRow + 1)
-                setCurrentLetter(0)
-                setTimeout(() => {
-                    if (inputRef.current) { inputRef.current.focus() }
-                }, 1)
+                const wordInDict = await isWordInDict(guessed_word)
+                if (!wordInDict) { console.log("Invalid word") }
+                else {
+
+                    // deep copy
+                    const guess_letters = [...letters[currentRow]]
+                    const correct_letters = CORRECT_WORD.split("")
+                    const correct_positions = []
+                    const correct_letters_wrong_positions = []
+
+                    for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
+                        if (guess_letters[i] === correct_letters[i]) {
+                            correct_positions.push(i)
+                            guess_letters[i] = ""
+                            correct_letters[i] = ""
+                        }
+                    }
+
+                    for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
+                        const ch = guess_letters[i]
+                        if (ch) {
+                            if (checkCharMembership(ch, correct_letters)) {
+                                correct_letters_wrong_positions.push(i)
+                                const index = correct_letters.indexOf(ch)
+                                correct_letters[index] = ""
+                            }
+                        }
+                    }
+
+                    const nextBackgroundColorsRow = backgroundColors[currentRow].map((color, index) => {
+                        if (correct_positions.includes(index)) {
+                            return `${CORRECT_LETTER_POSITION_CLASS}`
+                        }
+                        else if (correct_letters_wrong_positions.includes(index)) {
+                            return `${CORRECT_LETTER_CLASS}`
+                        }
+                        else { return color }
+                    })
+
+                    const nextBackgroundColors = backgroundColors.map((colorRow, index) => {
+                        if (index === currentRow) {
+                            return nextBackgroundColorsRow
+                        }
+                        else { return colorRow }
+                    })
+                    setBackgroudColors(nextBackgroundColors)
+
+                    setCurrentRow(currentRow + 1)
+                    setCurrentLetter(0)
+                    setTimeout(() => {
+                        if (inputRef.current) { inputRef.current.focus() }
+                    }, 1)
+                }
             }
         }
 
