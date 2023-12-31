@@ -1,15 +1,23 @@
 import { useState, useRef } from "react";
 import WordNew from "./WordNew";
-import { MAX_NUMBER_OF_TRIES, MAX_NUMBER_OF_CHARS } from "./Word";
+
+export const MAX_NUMBER_OF_TRIES = 6
+export const MAX_NUMBER_OF_CHARS = 5
+
+const CORRECT_WORD = "MATCH"
+const CORRECT_LETTER_POSITION_CLASS = "green" 
+const CORRECT_LETTER_CLASS = "yellow" 
 
 export default function WordTableNew() {
     const [currentRow, setCurrentRow] = useState(0)
     const [currentLetter, setCurrentLetter] = useState(0)
 
-    const inputRef = useRef(null)
-
-    // letters -> 2D array
+    // letters, backgroundColors -> 2D array
     const [letters, setLetters] = useState(Array(MAX_NUMBER_OF_TRIES).fill(0).map(() => new Array(MAX_NUMBER_OF_CHARS).fill("")))
+    const [backgroundColors, setBackgroudColors] = useState(Array(MAX_NUMBER_OF_TRIES).fill(0).map(() => new Array(MAX_NUMBER_OF_CHARS).fill("")))
+
+    // to focus on next row
+    const inputRef = useRef(null)
 
     function handleKeyDown(e) {
         const key = e.key
@@ -24,7 +32,7 @@ export default function WordTableNew() {
             });
 
             const nextLetters = letters.map((letterRow, index) => {
-                if (index == currentRow) {
+                if (index === currentRow) {
                     return nextLetterRow
                 }
                 else { return letterRow }
@@ -35,7 +43,23 @@ export default function WordTableNew() {
         if (key === "Enter") {
             const guessed_word = letters[currentRow].join("")
             if (guessed_word.length < 5) { console.log("Not enough letters") }
+            else if (guessed_word === CORRECT_WORD) {
+                const nextBackgroundColorsRow = backgroundColors[currentRow].map(() => {
+                    return `${CORRECT_LETTER_POSITION_CLASS}`
+                })
 
+                const nextBackgroundColors = backgroundColors.map((colorRow, index) => {
+                    if (index === currentRow) {
+                        return nextBackgroundColorsRow
+                    }
+                    else { return colorRow }
+                })
+                setBackgroudColors(nextBackgroundColors)
+                // disable all rows
+                setTimeout(() => {
+                    setCurrentRow(MAX_NUMBER_OF_TRIES + 1)
+                }, 1)
+            }
             else {
                 setCurrentRow(currentRow + 1)
                 setCurrentLetter(0)
@@ -74,9 +98,10 @@ export default function WordTableNew() {
         rows.push(
             <WordNew
                 key={i}
-                Ref={i === currentRow ? inputRef : null}
+                innerRef={i === currentRow ? inputRef : null}
                 isDisabled={i !== currentRow}
                 letters={letters[i]}
+                backgroundColors={backgroundColors[i]}
                 handleKeyDown={handleKeyDown}
             />
         )

@@ -1,14 +1,15 @@
 import WordAtom from "./WordAtom"
-import { MAX_NUMBER_OF_CHARS } from "./Word"
+import { MAX_NUMBER_OF_CHARS } from "./WordTableNew"
 import "../styles/WordNew.css"
 
-export default function WordNew({ Ref, isDisabled, letters, handleKeyDown }) {
+export default function WordNew({ innerRef, isDisabled, letters, handleKeyDown, backgroundColors }) {
     const columns = [
         <WordAtom
             key={0}
-            Ref={Ref}
+            innerRef={innerRef}
             isDisabled={isDisabled}
             value={letters[0]}
+            backgroundColor={backgroundColors[0]}
             handleKeyDown={handleKeyDown}
         />
     ]
@@ -18,6 +19,7 @@ export default function WordNew({ Ref, isDisabled, letters, handleKeyDown }) {
                 key={i}
                 isDisabled={true}
                 value={letters[i]}
+                backgroundColor={backgroundColors[i]}
                 handleKeyDown={handleKeyDown}
             />
         )

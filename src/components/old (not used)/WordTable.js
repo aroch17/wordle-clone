@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { MAX_NUMBER_OF_TRIES, MAX_NUMBER_OF_CHARS } from "./Word"
 import WordBlock from "./WordBlock"
-import { isWordInDict } from "../scripts/dictionaryChecker"
-import NotEnoughLettersModal from "../modals/NotEnoughLettersModal"
-import InvalidCharactersModal from "../modals/InvalidCharactersModal"
-import InvalidWordModal from "../modals/InvalidWordModal"
-import RepeatedWordModal from "../modals/RepeatedWordModal"
+import { isWordInDict } from "../../scripts/dictionaryChecker"
+import NotEnoughLettersModal from "../../modals/NotEnoughLettersModal"
+import InvalidCharactersModal from "../../modals/InvalidCharactersModal"
+import InvalidWordModal from "../../modals/InvalidWordModal"
+import RepeatedWordModal from "../../modals/RepeatedWordModal"
 
 export default function WordTable() {
     const [currentRow, setCurrentRow] = useState(1)
