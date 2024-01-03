@@ -1,9 +1,10 @@
 .char-input {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 2.25rem;
     margin-left: 5px;
+    font-weight: bold;
     background-color: #272829;
     /* Removes blinking cursor */
     color: transparent;

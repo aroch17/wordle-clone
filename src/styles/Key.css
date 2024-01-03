@@ -1,0 +1,36 @@
+.key {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 30px;
+    height: 50px;
+    background-color: grey;
+    font-size: 2rem;
+    padding: 10px;
+    color: white;
+    margin-right: 10px;
+    text-align: center;
+    border-radius: 2.5px;
+}
+
+.key-val {
+    margin: 0;
+    padding: 0;
+}
+
+.special {
+    width: 70px;
+}
+
+.green {
+    background-color: #538d4e;
+}
+
+.yellow {
+    background-color: #b59f3b;
+}
+
+.grey {
+    background-color: #3a3a3c;;
+}

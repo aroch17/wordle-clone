@@ -1,0 +1,8 @@
+.row-1, .row-2, .row-3 {
+    display: flex;
+    justify-content: center;
+}
+
+.row-2, .row-3 {
+    margin-top: 10px;
+}
