@@ -38,6 +38,7 @@ const KEYS = {
 const CORRECT_WORD = "TWIRL"
 const CORRECT_LETTER_POSITION_CLASS = "green"
 const CORRECT_LETTER_CLASS = "yellow"
+const INCORRECT_LETTER_CLASS = "grey"
 
 export default function WordTableNew() {
     const [currentRow, setCurrentRow] = useState(0)
@@ -87,7 +88,7 @@ export default function WordTableNew() {
             if (guessed_word.length < 5) { console.log("Not enough letters") }
             else if (guessed_word === CORRECT_WORD) {
                 for (let letter of guessed_word) {
-                    inputLetters[letter] = "green"
+                    inputLetters[letter] = `${CORRECT_LETTER_POSITION_CLASS}`
                 }
 
                 Object.keys(nextKeys).map((key) => {
@@ -128,7 +129,7 @@ export default function WordTableNew() {
                     for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
                         if (guess_letters[i] === correct_letters[i]) {
                             correct_positions.push(i)
-                            inputLetters[guess_letters[i]] = "green"
+                            inputLetters[guess_letters[i]] = `${CORRECT_LETTER_POSITION_CLASS}`
                             guess_letters[i] = ""
                             correct_letters[i] = ""
                         }
@@ -139,7 +140,7 @@ export default function WordTableNew() {
                         if (ch) {
                             if (checkCharMembership(ch, correct_letters)) {
                                 correct_letters_wrong_positions.push(i)
-                                inputLetters[ch] = "yellow"
+                                inputLetters[ch] = `${CORRECT_LETTER_CLASS}`
                                 guess_letters[i] = ""
                                 const index = correct_letters.indexOf(ch)
                                 correct_letters[index] = ""
@@ -149,7 +150,7 @@ export default function WordTableNew() {
 
                     for (let ch of guess_letters) {
                         if(ch) {
-                            inputLetters[ch] = "grey"
+                            inputLetters[ch] = `${INCORRECT_LETTER_CLASS}`
                         }
                     }
 
@@ -167,7 +168,7 @@ export default function WordTableNew() {
                         else if (correct_letters_wrong_positions.includes(index)) {
                             return `${CORRECT_LETTER_CLASS}`
                         }
-                        else { return color }
+                        else { return `${INCORRECT_LETTER_CLASS}` }
                     })
 
                     const nextBackgroundColors = backgroundColors.map((colorRow, index) => {
