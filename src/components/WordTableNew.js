@@ -140,12 +140,12 @@ export default function WordTableNew() {
         if (guessed_word.length < 5) { console.log("Not enough letters") }
         else if (guessed_word === CORRECT_WORD) {
             handleCorrectWord(guessed_word)
+            console.log(letters, keys)
         }
         else {
             const wordInDict = await isWordInDict(guessed_word)
             if (!wordInDict) { console.log("Invalid word") }
             else {
-
                 // deep copy
                 const guess_letters = [...letters[currentRow]]
                 const correct_letters = CORRECT_WORD.split("")
