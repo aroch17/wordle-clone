@@ -1,7 +1,7 @@
 import KeyRow from "./KeyRow";
 import "../styles/KeyTable.css"
 
-export default function KeyTable({ values, handleKeyDown }) {
+export default function KeyTable({ values, handleKeyDown, innerRef }) {
     const keyEntries = Object.entries(values)
     
     const keyRow1 = keyEntries.slice(0, 10)
@@ -12,9 +12,9 @@ export default function KeyTable({ values, handleKeyDown }) {
 
     return (
         <div className="key-table">
-            <KeyRow values={keyRow1} rowNum={"1"} handleKeyDown={handleKeyDown}/>
-            <KeyRow values={keyRow2} rowNum={"2"} handleKeyDown={handleKeyDown}/>
-            <KeyRow values={keyRow3New} rowNum={"3"} handleKeyDown={handleKeyDown}/>
+            <KeyRow values={keyRow1} rowNum={"1"} handleKeyDown={handleKeyDown} innerRef={innerRef}/>
+            <KeyRow values={keyRow2} rowNum={"2"} handleKeyDown={handleKeyDown} innerRef={innerRef}/>
+            <KeyRow values={keyRow3New} rowNum={"3"} handleKeyDown={handleKeyDown} innerRef={innerRef}/>
         </div>
     )
 }

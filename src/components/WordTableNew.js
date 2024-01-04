@@ -237,7 +237,7 @@ export default function WordTableNew() {
     return (
         <>
             {rows}
-            <KeyTable values={keys} handleKeyDown={handleKeyDown} />
+            <KeyTable values={keys} handleKeyDown={handleKeyDown} innerRef={inputRef}/>
         </>
     )
 }
