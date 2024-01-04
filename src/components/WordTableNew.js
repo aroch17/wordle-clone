@@ -55,13 +55,6 @@ export default function WordTableNew() {
     // to focus on next row
     const inputRef = useRef(null)
 
-    function checkCharMembership(letter, word) {
-        for (let ch of word) {
-            if (ch === letter) { return true }
-        }
-        return false
-    }
-
     function handleValueInput(key) {
         // only characters allowed
         const value = key.replace(/[^A-Za-z]/ig, '')
@@ -104,6 +97,36 @@ export default function WordTableNew() {
         setLetters(nextLetters);
     }
 
+    function handleCorrectWord(guessed_word) {
+        for (let letter of guessed_word) {
+            inputLetters[letter] = `${CORRECT_LETTER_POSITION_CLASS}`
+        }
+
+        Object.keys(nextKeys).map((key) => {
+            if (Object.hasOwn(inputLetters, key)) {
+                nextKeys[key] = inputLetters[key]
+            }
+        })
+        setKeys(nextKeys)
+
+        const nextBackgroundColorsRow = backgroundColors[currentRow].map(() => {
+            return `${CORRECT_LETTER_POSITION_CLASS}`
+        })
+
+        const nextBackgroundColors = backgroundColors.map((colorRow, index) => {
+            if (index === currentRow) {
+                return nextBackgroundColorsRow
+            }
+            else { return colorRow }
+        })
+        setBackgroudColors(nextBackgroundColors)
+
+        // disable all rows
+        setTimeout(() => {
+            setCurrentRow(MAX_NUMBER_OF_TRIES + 1)
+        }, 1)
+    }
+
     function moveAndFocusNextRow(currentRow) {
         setCurrentRow(currentRow + 1)
         setCurrentLetter(0)
@@ -112,19 +135,50 @@ export default function WordTableNew() {
         }, 1)
     }
 
-    async function handleKeyDown(e) {
-        const key = e.key
-
-        if (key === "Backspace") {
-            handleBackspace()
+    async function handleEnter() {
+        const guessed_word = letters[currentRow].join("")
+        if (guessed_word.length < 5) { console.log("Not enough letters") }
+        else if (guessed_word === CORRECT_WORD) {
+            handleCorrectWord(guessed_word)
         }
+        else {
+            const wordInDict = await isWordInDict(guessed_word)
+            if (!wordInDict) { console.log("Invalid word") }
+            else {
 
-        if (key === "Enter") {
-            const guessed_word = letters[currentRow].join("")
-            if (guessed_word.length < 5) { console.log("Not enough letters") }
-            else if (guessed_word === CORRECT_WORD) {
-                for (let letter of guessed_word) {
-                    inputLetters[letter] = `${CORRECT_LETTER_POSITION_CLASS}`
+                // deep copy
+                const guess_letters = [...letters[currentRow]]
+                const correct_letters = CORRECT_WORD.split("")
+                const correct_positions = []
+                const correct_letters_wrong_positions = []
+
+
+                for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
+                    if (guess_letters[i] === correct_letters[i]) {
+                        correct_positions.push(i)
+                        inputLetters[guess_letters[i]] = `${CORRECT_LETTER_POSITION_CLASS}`
+                        guess_letters[i] = ""
+                        correct_letters[i] = ""
+                    }
+                }
+
+                for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
+                    const ch = guess_letters[i]
+                    if (ch) {
+                        if (correct_letters.includes(ch)) {
+                            correct_letters_wrong_positions.push(i)
+                            inputLetters[ch] = `${CORRECT_LETTER_CLASS}`
+                            guess_letters[i] = ""
+                            const index = correct_letters.indexOf(ch)
+                            correct_letters[index] = ""
+                        }
+                    }
+                }
+
+                for (let ch of guess_letters) {
+                    if (ch && !CORRECT_WORD.includes(ch)) {
+                        inputLetters[ch] = `${INCORRECT_LETTER_CLASS}`
+                    }
                 }
 
                 Object.keys(nextKeys).map((key) => {
@@ -134,8 +188,16 @@ export default function WordTableNew() {
                 })
                 setKeys(nextKeys)
 
-                const nextBackgroundColorsRow = backgroundColors[currentRow].map(() => {
-                    return `${CORRECT_LETTER_POSITION_CLASS}`
+                const nextBackgroundColorsRow = backgroundColors[currentRow].map((color, index) => {
+                    if (correct_positions.includes(index)) {
+                        return `${CORRECT_LETTER_POSITION_CLASS}`
+                    }
+                    else if (correct_letters_wrong_positions.includes(index)) {
+                        return `${CORRECT_LETTER_CLASS}`
+                    }
+                    else {
+                        return `${INCORRECT_LETTER_CLASS}`
+                    }
                 })
 
                 const nextBackgroundColors = backgroundColors.map((colorRow, index) => {
@@ -145,82 +207,17 @@ export default function WordTableNew() {
                     else { return colorRow }
                 })
                 setBackgroudColors(nextBackgroundColors)
-                // disable all rows
-                setTimeout(() => {
-                    setCurrentRow(MAX_NUMBER_OF_TRIES + 1)
-                }, 1)
-            }
-            else {
-                const wordInDict = await isWordInDict(guessed_word)
-                if (!wordInDict) { console.log("Invalid word") }
-                else {
-
-                    // deep copy
-                    const guess_letters = [...letters[currentRow]]
-                    const correct_letters = CORRECT_WORD.split("")
-                    const correct_positions = []
-                    const correct_letters_wrong_positions = []
-
-
-                    for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
-                        if (guess_letters[i] === correct_letters[i]) {
-                            correct_positions.push(i)
-                            inputLetters[guess_letters[i]] = `${CORRECT_LETTER_POSITION_CLASS}`
-                            guess_letters[i] = ""
-                            correct_letters[i] = ""
-                        }
-                    }
-
-                    for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
-                        const ch = guess_letters[i]
-                        if (ch) {
-                            if (checkCharMembership(ch, correct_letters)) {
-                                correct_letters_wrong_positions.push(i)
-                                inputLetters[ch] = `${CORRECT_LETTER_CLASS}`
-                                guess_letters[i] = ""
-                                const index = correct_letters.indexOf(ch)
-                                correct_letters[index] = ""
-                            }
-                        }
-                    }
-
-                    for (let ch of guess_letters) {
-                        if (ch) {
-                            inputLetters[ch] = `${INCORRECT_LETTER_CLASS}`
-                        }
-                    }
-
-                    Object.keys(nextKeys).map((key) => {
-                        if (Object.hasOwn(inputLetters, key)) {
-                            nextKeys[key] = inputLetters[key]
-                        }
-                    })
-                    setKeys(nextKeys)
-
-                    const nextBackgroundColorsRow = backgroundColors[currentRow].map((color, index) => {
-                        if (correct_positions.includes(index)) {
-                            return `${CORRECT_LETTER_POSITION_CLASS}`
-                        }
-                        else if (correct_letters_wrong_positions.includes(index)) {
-                            return `${CORRECT_LETTER_CLASS}`
-                        }
-                        else {
-                            return `${INCORRECT_LETTER_CLASS}`
-                        }
-                    })
-
-                    const nextBackgroundColors = backgroundColors.map((colorRow, index) => {
-                        if (index === currentRow) {
-                            return nextBackgroundColorsRow
-                        }
-                        else { return colorRow }
-                    })
-                    setBackgroudColors(nextBackgroundColors)
-                    moveAndFocusNextRow(currentRow)
-                }
+                moveAndFocusNextRow(currentRow)
             }
         }
-        handleValueInput(key)
+    }
+
+    function handleKeyDown(e) {
+        const key = e.key
+
+        if (key === "Backspace") { handleBackspace() }
+        else if (key === "Enter") { handleEnter() }
+        else { handleValueInput(key) }
     }
 
     const rows = []
@@ -240,7 +237,7 @@ export default function WordTableNew() {
     return (
         <>
             {rows}
-            <KeyTable values={keys} handleKeyDown={handleKeyDown}/>
+            <KeyTable values={keys} handleKeyDown={handleKeyDown} />
         </>
     )
 }
