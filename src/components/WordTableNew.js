@@ -35,7 +35,7 @@ const KEYS = {
     "M": "",
 }
 
-const CORRECT_WORD = "TWIRL"
+const CORRECT_WORD = "MATCH"
 const CORRECT_LETTER_POSITION_CLASS = "green"
 const CORRECT_LETTER_CLASS = "yellow"
 const INCORRECT_LETTER_CLASS = "grey"
@@ -49,7 +49,7 @@ export default function WordTableNew() {
     const [backgroundColors, setBackgroudColors] = useState(Array(MAX_NUMBER_OF_TRIES).fill(0).map(() => new Array(MAX_NUMBER_OF_CHARS).fill("")))
 
     const [keys, setKeys] = useState(KEYS)
-    const nextKeys = {...keys}
+    const nextKeys = { ...keys }
     const inputLetters = {}
 
     // to focus on next row
@@ -62,18 +62,20 @@ export default function WordTableNew() {
         return false
     }
 
-    async function handleKeyDown(e) {
-        const key = e.key
-
-        if (key === "Backspace") {
+    function handleValueInput(key) {
+        // only characters allowed
+        const value = key.replace(/[^A-Za-z]/ig, '')
+        if (value && value.length === 1) {
+            // update row
             const nextLetterRow = letters[currentRow].map((letter, index) => {
-                if (index === currentLetter - 1) {
-                    setCurrentLetter(currentLetter - 1)
-                    return ""
+                if (index === currentLetter) {
+                    setCurrentLetter(currentLetter + 1)
+                    return value.toUpperCase()
                 }
                 else { return letter }
             });
 
+            // update 2D array
             const nextLetters = letters.map((letterRow, index) => {
                 if (index === currentRow) {
                     return nextLetterRow
@@ -81,6 +83,40 @@ export default function WordTableNew() {
                 else { return letterRow }
             })
             setLetters(nextLetters);
+        }
+    }
+
+    function handleBackspace() {
+        const nextLetterRow = letters[currentRow].map((letter, index) => {
+            if (index === currentLetter - 1) {
+                setCurrentLetter(currentLetter - 1)
+                return ""
+            }
+            else { return letter }
+        });
+
+        const nextLetters = letters.map((letterRow, index) => {
+            if (index === currentRow) {
+                return nextLetterRow
+            }
+            else { return letterRow }
+        })
+        setLetters(nextLetters);
+    }
+
+    function moveAndFocusNextRow(currentRow) {
+        setCurrentRow(currentRow + 1)
+        setCurrentLetter(0)
+        setTimeout(() => {
+            if (inputRef.current) { inputRef.current.focus() }
+        }, 1)
+    }
+
+    async function handleKeyDown(e) {
+        const key = e.key
+
+        if (key === "Backspace") {
+            handleBackspace()
         }
 
         if (key === "Enter") {
@@ -124,7 +160,7 @@ export default function WordTableNew() {
                     const correct_letters = CORRECT_WORD.split("")
                     const correct_positions = []
                     const correct_letters_wrong_positions = []
-                    
+
 
                     for (let i = 0; i < MAX_NUMBER_OF_CHARS; i++) {
                         if (guess_letters[i] === correct_letters[i]) {
@@ -149,7 +185,7 @@ export default function WordTableNew() {
                     }
 
                     for (let ch of guess_letters) {
-                        if(ch) {
+                        if (ch) {
                             inputLetters[ch] = `${INCORRECT_LETTER_CLASS}`
                         }
                     }
@@ -168,7 +204,9 @@ export default function WordTableNew() {
                         else if (correct_letters_wrong_positions.includes(index)) {
                             return `${CORRECT_LETTER_CLASS}`
                         }
-                        else { return `${INCORRECT_LETTER_CLASS}` }
+                        else {
+                            return `${INCORRECT_LETTER_CLASS}`
+                        }
                     })
 
                     const nextBackgroundColors = backgroundColors.map((colorRow, index) => {
@@ -178,37 +216,11 @@ export default function WordTableNew() {
                         else { return colorRow }
                     })
                     setBackgroudColors(nextBackgroundColors)
-
-                    setCurrentRow(currentRow + 1)
-                    setCurrentLetter(0)
-                    setTimeout(() => {
-                        if (inputRef.current) { inputRef.current.focus() }
-                    }, 1)
+                    moveAndFocusNextRow(currentRow)
                 }
             }
         }
-
-        // only characters allowed
-        const value = key.replace(/[^A-Za-z]/ig, '')
-        if (value && value.length === 1) {
-            // update row
-            const nextLetterRow = letters[currentRow].map((letter, index) => {
-                if (index === currentLetter) {
-                    setCurrentLetter(currentLetter + 1)
-                    return value.toUpperCase()
-                }
-                else { return letter }
-            });
-
-            // update 2D array
-            const nextLetters = letters.map((letterRow, index) => {
-                if (index === currentRow) {
-                    return nextLetterRow
-                }
-                else { return letterRow }
-            })
-            setLetters(nextLetters);
-        }
+        handleValueInput(key)
     }
 
     const rows = []
@@ -228,7 +240,7 @@ export default function WordTableNew() {
     return (
         <>
             {rows}
-            <KeyTable values={keys} />
+            <KeyTable values={keys} handleKeyDown={handleKeyDown}/>
         </>
     )
 }
