@@ -11,6 +11,8 @@
     text-shadow: 0 0 0 #fff;
     border: 1px solid #73777B;
     text-transform: uppercase;
+
+    transition: background-color 0.75s;
 }
 
 .char-input:focus {
