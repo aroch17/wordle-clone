@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import WordNew from "./WordNew";
 import { isWordInDict } from "../scripts/dictionaryChecker";
 import KeyTable from "./KeyTable";
+import Modal from "../modals/Modal";
 
 export const MAX_NUMBER_OF_TRIES = 6
 export const MAX_NUMBER_OF_CHARS = 5
@@ -54,6 +55,9 @@ export default function WordTableNew() {
 
     // to focus on next row
     const inputRef = useRef(null)
+
+    const [isModalVisible, setIsModalVisible] = useState(false)
+    const [modalMessage, setModalMessage] = useState("")
 
     function handleValueInput(key) {
         // only characters allowed
@@ -129,22 +133,39 @@ export default function WordTableNew() {
 
     function moveAndFocusNextRow(currentRow) {
         setCurrentRow(currentRow + 1)
+        console.log(currentRow)
+        if (currentRow == MAX_NUMBER_OF_TRIES - 1) {
+            console.log("fail")
+            showModal("FAIL")
+        }
         setCurrentLetter(0)
         setTimeout(() => {
             if (inputRef.current) { inputRef.current.focus() }
         }, 1)
     }
 
+    function showModal(message) {
+        setModalMessage(message)
+        setIsModalVisible(true)
+        setTimeout(() => {
+            setIsModalVisible(false)
+        }, 1500)
+    }
+
     async function handleEnter() {
         const guessed_word = letters[currentRow].join("")
-        if (guessed_word.length < 5) { console.log("Not enough letters") }
+        if (guessed_word.length < 5) { 
+            showModal("INCOMPLETE")
+        }
         else if (guessed_word === CORRECT_WORD) {
             handleCorrectWord(guessed_word)
             console.log(letters, keys)
         }
         else {
             const wordInDict = await isWordInDict(guessed_word)
-            if (!wordInDict) { console.log("Invalid word") }
+            if (!wordInDict) { 
+                showModal("INVALID")
+            }
             else {
                 // deep copy
                 const guess_letters = [...letters[currentRow]]
@@ -237,6 +258,7 @@ export default function WordTableNew() {
     return (
         <>
             {rows}
+            <Modal isModalVisible={isModalVisible} message={modalMessage} CORRECT_WORD={CORRECT_WORD}/>
             <KeyTable values={keys} handleKeyDown={handleKeyDown} innerRef={inputRef}/>
         </>
     )

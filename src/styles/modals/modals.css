@@ -1,4 +1,9 @@
 .modal {
-    position: relative;
-    color: aliceblue;
+    position: absolute;
+    top: 60px;
+    color: black;
+    background-color: white;
+    padding: 10px;
+
+    transition: opacity 0.25s;
 }
