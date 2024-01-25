@@ -4,6 +4,8 @@
 
 This is a Wordle Clone created using React and Free Dictionary API (https://dictionaryapi.dev/)
 
+Check out the app [here](https://aroch17.github.io/wordle-clone/)!
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 Favicon Image: https://www.flaticon.com/free-icons/puzzle - Puzzle icons created by Freepik - Flaticon
