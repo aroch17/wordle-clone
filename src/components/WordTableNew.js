@@ -3,6 +3,7 @@ import WordNew from "./WordNew";
 import { isWordInDict } from "../scripts/dictionaryChecker";
 import KeyTable from "./KeyTable";
 import Modal from "../modals/Modal";
+import { getRandomWord } from "../scripts/getRandomWord";
 
 export const MAX_NUMBER_OF_TRIES = 6
 export const MAX_NUMBER_OF_CHARS = 5
@@ -36,7 +37,7 @@ const KEYS = {
     "M": "",
 }
 
-const CORRECT_WORD = "MATCH"
+const CORRECT_WORD = await getRandomWord()
 const CORRECT_LETTER_POSITION_CLASS = "green"
 const CORRECT_LETTER_CLASS = "yellow"
 const INCORRECT_LETTER_CLASS = "grey"
