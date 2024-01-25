@@ -2,7 +2,7 @@
 
 ![Cover Image](/screenshots/cover_img.png?raw=true "Cover Image")
 
-This is a Wordle Clone created using React and Free Dictionary API (https://dictionaryapi.dev/)
+This is a Wordle Clone created using React, Free Dictionary API (https://dictionaryapi.dev/) and Random word API (https://random-word-api.herokuapp.com/home)
 
 Check out the app [here](https://aroch17.github.io/wordle-clone/)!
 
